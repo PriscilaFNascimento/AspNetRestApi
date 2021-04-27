@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetRestApi.Business.Implementations;
+using AspNetRestApi.Model.Context;
+using AspNetRestApi.Repository.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +32,16 @@ namespace AspNetRestApi
         {
 
             services.AddControllers();
+
+            var connection = Configuration["MySQLConnection:MySQLConnectionString"];
+            services.AddDbContext<MysqlContext>(options => options.UseMySql(connection));
+
+            services.AddApiVersioning();
+
+            //Dependency Injection
+            services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
+            services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AspNetRestApi", Version = "v1" });
